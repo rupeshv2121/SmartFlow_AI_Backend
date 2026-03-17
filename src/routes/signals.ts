@@ -3,6 +3,8 @@ import {
   GetCongestionAnalyticsResponse,
   GetSignalTimingResponse,
 } from "../lib/api-zod";
+import { trafficStore } from "../store/traffic-store";
+import { trafficLightAlgorithm } from "../services/traffic-light-algorithm";
 
 const router: IRouter = Router();
 
@@ -79,26 +81,46 @@ function tickPhases() {
 setInterval(tickPhases, 1000);
 
 router.get("/signal-timing", (_req, res) => {
-  const signals = INTERSECTIONS.map((s) => {
-    const jitter = Math.floor(Math.random() * 10 - 5);
-    const vehicles = Math.max(1, s.baseVehicles + jitter);
-    let density: "low" | "medium" | "high" = s.density;
-    if (vehicles > 55) density = "high";
-    else if (vehicles > 25) density = "medium";
-    else density = "low";
-    const greenTime = density === "high" ? 60 : density === "medium" ? 40 : 20;
-    const c = phaseCounters[s.id];
-    return {
-      id: s.id,
-      intersection: s.intersection,
-      vehicles,
-      density,
-      greenTime,
-      currentPhase: PHASES[c.phase],
-      phaseElapsed: c.elapsed,
+  // Get real signals from store
+  const realSignals = trafficStore.getAllSignals();
+
+  let signals;
+  if (realSignals.length > 0) {
+    // Use real data with algorithm-calculated timings
+    signals = realSignals.map((s) => ({
+      id: s.signalId,
+      intersection: s.intersectionId,
+      vehicles: s.vehicleCount,
+      density: s.density,
+      greenTime: trafficLightAlgorithm.calculateGreenTime(s.signalId),
+      currentPhase: s.currentPhase,
+      phaseElapsed: s.phaseElapsed,
       cycleTime: s.cycleTime,
-    };
-  });
+    }));
+  } else {
+    // Fallback to mock data
+    signals = INTERSECTIONS.map((s) => {
+      const jitter = Math.floor(Math.random() * 10 - 5);
+      const vehicles = Math.max(1, s.baseVehicles + jitter);
+      let density: "low" | "medium" | "high" = s.density;
+      if (vehicles > 55) density = "high";
+      else if (vehicles > 25) density = "medium";
+      else density = "low";
+      const greenTime = density === "high" ? 60 : density === "medium" ? 40 : 20;
+      const c = phaseCounters[s.id];
+      return {
+        id: s.id,
+        intersection: s.intersection,
+        vehicles,
+        density,
+        greenTime,
+        currentPhase: PHASES[c.phase],
+        phaseElapsed: c.elapsed,
+        cycleTime: s.cycleTime,
+      };
+    });
+  }
+
   const data = GetSignalTimingResponse.parse({
     signals,
     timestamp: new Date().toISOString(),
@@ -107,24 +129,41 @@ router.get("/signal-timing", (_req, res) => {
 });
 
 router.get("/congestion-analytics", (_req, res) => {
-  const analyticsData = INTERSECTIONS.map((s) => {
-    const jitter = Math.random() * 20 - 10;
-    const congestion = Math.min(
-      100,
-      Math.max(0, (s.baseVehicles / 80) * 100 + jitter),
-    );
-    const vehicles = Math.max(
-      1,
-      s.baseVehicles + Math.floor(Math.random() * 10 - 5),
-    );
-    const avgSpeed = Math.max(5, 60 - congestion * 0.5 + Math.random() * 5);
-    return {
-      intersection: s.intersection.split(" - ")[0],
-      congestion: Math.round(congestion * 10) / 10,
-      vehicles,
-      avgSpeed: Math.round(avgSpeed * 10) / 10,
-    };
-  });
+  // Get real intersections from store
+  const realIntersections = trafficStore.getAllIntersections();
+
+  let analyticsData;
+  if (realIntersections.length > 0) {
+    // Use real data
+    analyticsData = realIntersections.map((int) => ({
+      intersection: int.intersectionName,
+      congestion: int.congestionLevel,
+      vehicles: int.totalVehicles,
+      avgSpeed:
+        int.lanes.reduce((sum, lane) => sum + lane.averageSpeed, 0) /
+        (int.lanes.length || 1),
+    }));
+  } else {
+    // Fallback to mock data
+    analyticsData = INTERSECTIONS.map((s) => {
+      const jitter = Math.random() * 20 - 10;
+      const congestion = Math.min(
+        100,
+        Math.max(0, (s.baseVehicles / 80) * 100 + jitter),
+      );
+      const vehicles = Math.max(
+        1,
+        s.baseVehicles + Math.floor(Math.random() * 10 - 5),
+      );
+      const avgSpeed = Math.max(5, 60 - congestion * 0.5 + Math.random() * 5);
+      return {
+        intersection: s.intersection.split(" - ")[0],
+        congestion: Math.round(congestion * 10) / 10,
+        vehicles,
+        avgSpeed: Math.round(avgSpeed * 10) / 10,
+      };
+    });
+  }
 
   const hourlyTrend = [];
   for (let h = 0; h < 24; h++) {
