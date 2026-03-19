@@ -1,10 +1,22 @@
-import express, { type Express } from "express";
 import cors from "cors";
+import express, { type Express } from "express";
 import router from "./routes";
 
 const app: Express = express();
 
-app.use(cors());
+const configuredOrigins = process.env["CORS_ORIGIN"]
+  ?.split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+app.use(
+  cors({
+    origin:
+      configuredOrigins && configuredOrigins.length > 0
+        ? configuredOrigins
+        : true,
+  }),
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
