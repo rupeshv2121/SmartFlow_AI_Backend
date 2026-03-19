@@ -1,5 +1,5 @@
 // API endpoints for AI models to post detection data
-import { Router, type IRouter } from "express";
+import express, { type IRouter } from "express";
 import { trafficStore } from "../store/traffic-store";
 import type {
   IntersectionData,
@@ -8,7 +8,7 @@ import type {
   VehicleDetection,
 } from "../types/ai-models";
 
-const router: IRouter = Router();
+const router: IRouter = express.Router();
 
 /**
  * POST /api/ai/vehicle-detection

@@ -1,4 +1,4 @@
-import { Router, type IRouter } from "express";
+import express, { type IRouter } from "express";
 import {
   GetCongestionAnalyticsResponse,
   GetSignalTimingResponse,
@@ -6,7 +6,7 @@ import {
 import { trafficStore } from "../store/traffic-store";
 import { trafficLightAlgorithm } from "../services/traffic-light-algorithm";
 
-const router: IRouter = Router();
+const router: IRouter = express.Router();
 
 const INTERSECTIONS = [
   {

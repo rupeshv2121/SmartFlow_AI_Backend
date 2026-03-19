@@ -1,10 +1,10 @@
-import { Router, type IRouter } from "express";
+import express, { type IRouter } from "express";
 import {
   GetIntersectionsResponse,
   GetIntersectionVideoResponse,
 } from "../lib/api-zod";
 
-const router: IRouter = Router();
+const router: IRouter = express.Router();
 
 const INTERSECTIONS_MAP = [
   {

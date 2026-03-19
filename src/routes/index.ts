@@ -1,4 +1,4 @@
-import { Router, type IRouter } from "express";
+import express, { type IRouter } from "express";
 import healthRouter from "./health";
 import trafficRouter from "./traffic";
 import signalsRouter from "./signals";
@@ -6,7 +6,7 @@ import emergencyRouter from "./emergency";
 import intersectionsRouter from "./intersections";
 import aiInputRouter from "./ai-input";
 
-const router: IRouter = Router();
+const router: IRouter = express.Router();
 
 router.use(healthRouter);
 router.use(trafficRouter);

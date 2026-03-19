@@ -1,7 +1,7 @@
-import { Router, type IRouter } from "express";
+import express, { type IRouter } from "express";
 import { HealthCheckResponse } from "../lib/api-zod";
 
-const router: IRouter = Router();
+const router: IRouter = express.Router();
 
 router.get("/healthz", (_req, res) => {
   const data = HealthCheckResponse.parse({ status: "ok" });

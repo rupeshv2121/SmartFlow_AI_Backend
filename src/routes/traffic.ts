@@ -1,4 +1,4 @@
-import { Router, type IRouter } from "express";
+import express, { type IRouter } from "express";
 import {
   GetCityHeatmapResponse,
   GetDashboardStatsResponse,
@@ -9,7 +9,7 @@ import {
 } from "../lib/api-zod";
 import { trafficStore } from "../store/traffic-store";
 
-const router: IRouter = Router();
+const router: IRouter = express.Router();
 
 const LANES = [
   {

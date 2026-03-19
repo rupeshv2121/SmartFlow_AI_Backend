@@ -1,4 +1,4 @@
-import { Router, type IRouter } from "express";
+import express, { type IRouter } from "express";
 import {
   GetActiveEmergencyCorridorResponse,
   GetEmergencyEventsResponse,
@@ -6,7 +6,7 @@ import {
 import { trafficStore } from "../store/traffic-store";
 import { greenCorridorService } from "../services/green-corridor";
 
-const router: IRouter = Router();
+const router: IRouter = express.Router();
 
 const EMERGENCY_EVENTS = [
   {

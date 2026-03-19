@@ -2,183 +2,183 @@
  * Zod schemas for SmartFlow AI Traffic Management API
  * Inlined from lib/api-zod for standalone backend usage
  */
-import * as zod from "zod";
+import z from "zod";
 
-export const HealthCheckResponse = zod.object({
-  status: zod.string(),
+export const HealthCheckResponse = z.object({
+  status: z.string(),
 });
 
-export const GetTrafficDensityResponse = zod.object({
-  lanes: zod.array(
-    zod.object({
-      id: zod.string(),
-      name: zod.string(),
-      density: zod.enum(["low", "medium", "high"]),
-      vehicleCount: zod.number(),
-      speed: zod.number(),
+export const GetTrafficDensityResponse = z.object({
+  lanes: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      density: z.enum(["low", "medium", "high"]),
+      vehicleCount: z.number(),
+      speed: z.number(),
     }),
   ),
-  timestamp: zod.string(),
+  timestamp: z.string(),
 });
 
-export const GetTrafficDensityHistoryResponse = zod.object({
-  data: zod.array(
-    zod.object({
-      time: zod.string(),
-      vehicles: zod.number(),
-      congestion: zod.number(),
-    }),
-  ),
-});
-
-export const GetVehicleCountsResponse = zod.object({
-  cars: zod.number(),
-  bikes: zod.number(),
-  buses: zod.number(),
-  trucks: zod.number(),
-  total: zod.number(),
-  timestamp: zod.string(),
-});
-
-export const GetDashboardStatsResponse = zod.object({
-  totalVehicles: zod.number(),
-  activeIntersections: zod.number(),
-  congestedLanes: zod.number(),
-  emergencyAlerts: zod.number(),
-  avgSpeed: zod.number(),
-  systemStatus: zod.string(),
-});
-
-export const GetSignalTimingResponse = zod.object({
-  signals: zod.array(
-    zod.object({
-      id: zod.string(),
-      intersection: zod.string(),
-      vehicles: zod.number(),
-      density: zod.enum(["low", "medium", "high"]),
-      greenTime: zod.number(),
-      currentPhase: zod.enum(["green", "yellow", "red"]),
-      phaseElapsed: zod.number(),
-      cycleTime: zod.number(),
-    }),
-  ),
-  timestamp: zod.string(),
-});
-
-export const GetCongestionAnalyticsResponse = zod.object({
-  data: zod.array(
-    zod.object({
-      intersection: zod.string(),
-      congestion: zod.number(),
-      vehicles: zod.number(),
-      avgSpeed: zod.number(),
-    }),
-  ),
-  hourlyTrend: zod.array(
-    zod.object({
-      hour: zod.string(),
-      congestion: zod.number(),
-      throughput: zod.number(),
+export const GetTrafficDensityHistoryResponse = z.object({
+  data: z.array(
+    z.object({
+      time: z.string(),
+      vehicles: z.number(),
+      congestion: z.number(),
     }),
   ),
 });
 
-export const GetEmergencyEventsResponse = zod.object({
-  events: zod.array(
-    zod.object({
-      id: zod.string(),
-      type: zod.string(),
-      route: zod.string(),
-      timestamp: zod.string(),
-      duration: zod.number(),
-      status: zod.enum(["active", "completed", "cancelled"]),
-      vehicleId: zod.string(),
-    }),
-  ),
-  recentCount: zod.number(),
+export const GetVehicleCountsResponse = z.object({
+  cars: z.number(),
+  bikes: z.number(),
+  buses: z.number(),
+  trucks: z.number(),
+  total: z.number(),
+  timestamp: z.string(),
 });
 
-export const GetActiveEmergencyCorridorResponse = zod.object({
-  active: zod.boolean(),
-  corridorId: zod.string().nullable(),
-  route: zod.array(zod.string()),
-  signals: zod.array(
-    zod.object({
-      signalId: zod.string(),
-      intersection: zod.string(),
-      status: zod.enum(["green", "yellow", "red", "standby"]),
-    }),
-  ),
-  vehicleType: zod.string().nullable(),
-  estimatedClearTime: zod.number().nullable(),
+export const GetDashboardStatsResponse = z.object({
+  totalVehicles: z.number(),
+  activeIntersections: z.number(),
+  congestedLanes: z.number(),
+  emergencyAlerts: z.number(),
+  avgSpeed: z.number(),
+  systemStatus: z.string(),
 });
 
-export const GetIntersectionsResponse = zod.object({
-  intersections: zod.array(
-    zod.object({
-      id: zod.string(),
-      name: zod.string(),
-      x: zod.number(),
-      y: zod.number(),
-      density: zod.enum(["low", "medium", "high"]),
-      vehicles: zod.number(),
-      signalPhase: zod.enum(["green", "yellow", "red"]),
+export const GetSignalTimingResponse = z.object({
+  signals: z.array(
+    z.object({
+      id: z.string(),
+      intersection: z.string(),
+      vehicles: z.number(),
+      density: z.enum(["low", "medium", "high"]),
+      greenTime: z.number(),
+      currentPhase: z.enum(["green", "yellow", "red"]),
+      phaseElapsed: z.number(),
+      cycleTime: z.number(),
     }),
   ),
-  roads: zod.array(
-    zod.object({
-      from: zod.string(),
-      to: zod.string(),
-      density: zod.enum(["low", "medium", "high"]),
+  timestamp: z.string(),
+});
+
+export const GetCongestionAnalyticsResponse = z.object({
+  data: z.array(
+    z.object({
+      intersection: z.string(),
+      congestion: z.number(),
+      vehicles: z.number(),
+      avgSpeed: z.number(),
     }),
   ),
-});
-
-export const GetIntersectionVideoParams = zod.object({
-  intersectionId: zod.coerce.string(),
-});
-
-export const GetIntersectionVideoResponse = zod.object({
-  intersectionId: zod.string(),
-  intersectionName: zod.string(),
-  streamUrl: zod.string(),
-  vehicles: zod.number(),
-  density: zod.enum(["low", "medium", "high"]),
-  detectedObjects: zod.array(
-    zod.object({
-      id: zod.string(),
-      type: zod.string(),
-      x: zod.number(),
-      y: zod.number(),
-      width: zod.number(),
-      height: zod.number(),
-      confidence: zod.number(),
-    }),
-  ),
-  fps: zod.number(),
-  resolution: zod.string(),
-});
-
-export const GetLaneDensityResponse = zod.object({
-  lanes: zod.array(
-    zod.object({
-      id: zod.string(),
-      name: zod.string(),
-      density: zod.enum(["low", "medium", "high"]),
-      vehicleCount: zod.number(),
-      speed: zod.number(),
+  hourlyTrend: z.array(
+    z.object({
+      hour: z.string(),
+      congestion: z.number(),
+      throughput: z.number(),
     }),
   ),
 });
 
-export const GetCityHeatmapResponse = zod.object({
-  cells: zod.array(
-    zod.object({
-      x: zod.number(),
-      y: zod.number(),
-      value: zod.number(),
-      zone: zod.string(),
+export const GetEmergencyEventsResponse = z.object({
+  events: z.array(
+    z.object({
+      id: z.string(),
+      type: z.string(),
+      route: z.string(),
+      timestamp: z.string(),
+      duration: z.number(),
+      status: z.enum(["active", "completed", "cancelled"]),
+      vehicleId: z.string(),
     }),
   ),
-  maxValue: zod.number(),
+  recentCount: z.number(),
+});
+
+export const GetActiveEmergencyCorridorResponse = z.object({
+  active: z.boolean(),
+  corridorId: z.string().nullable(),
+  route: z.array(z.string()),
+  signals: z.array(
+    z.object({
+      signalId: z.string(),
+      intersection: z.string(),
+      status: z.enum(["green", "yellow", "red", "standby"]),
+    }),
+  ),
+  vehicleType: z.string().nullable(),
+  estimatedClearTime: z.number().nullable(),
+});
+
+export const GetIntersectionsResponse = z.object({
+  intersections: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      x: z.number(),
+      y: z.number(),
+      density: z.enum(["low", "medium", "high"]),
+      vehicles: z.number(),
+      signalPhase: z.enum(["green", "yellow", "red"]),
+    }),
+  ),
+  roads: z.array(
+    z.object({
+      from: z.string(),
+      to: z.string(),
+      density: z.enum(["low", "medium", "high"]),
+    }),
+  ),
+});
+
+export const GetIntersectionVideoParams = z.object({
+  intersectionId: z.coerce.string(),
+});
+
+export const GetIntersectionVideoResponse = z.object({
+  intersectionId: z.string(),
+  intersectionName: z.string(),
+  streamUrl: z.string(),
+  vehicles: z.number(),
+  density: z.enum(["low", "medium", "high"]),
+  detectedObjects: z.array(
+    z.object({
+      id: z.string(),
+      type: z.string(),
+      x: z.number(),
+      y: z.number(),
+      width: z.number(),
+      height: z.number(),
+      confidence: z.number(),
+    }),
+  ),
+  fps: z.number(),
+  resolution: z.string(),
+});
+
+export const GetLaneDensityResponse = z.object({
+  lanes: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      density: z.enum(["low", "medium", "high"]),
+      vehicleCount: z.number(),
+      speed: z.number(),
+    }),
+  ),
+});
+
+export const GetCityHeatmapResponse = z.object({
+  cells: z.array(
+    z.object({
+      x: z.number(),
+      y: z.number(),
+      value: z.number(),
+      zone: z.string(),
+    }),
+  ),
+  maxValue: z.number(),
 });
