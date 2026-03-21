@@ -2,9 +2,9 @@
 // This can be replaced with Redis for production
 
 import type {
+  EmergencyVehicleData,
   IntersectionData,
   LaneData,
-  EmergencyVehicleData,
   TrafficSignalState,
   VehicleDetection,
 } from "../types/ai-models";
@@ -43,6 +43,16 @@ class TrafficStore {
   // Lane methods
   updateLane(data: LaneData): void {
     this.lanes.set(data.laneId, data);
+    // Also update historical data when we get new lane data
+    const totalVehicles = Array.from(this.lanes.values()).reduce(
+      (sum, lane) => sum + lane.vehicleCount,
+      0
+    );
+    const congestionPercentage = Math.min(
+      100,
+      Math.round((totalVehicles / 100) * 100)
+    );
+    this.addHistoricalData(totalVehicles, congestionPercentage);
   }
 
   getLane(laneId: string): LaneData | undefined {
@@ -101,7 +111,7 @@ class TrafficStore {
     // Keep only last 30 minutes of data
     const thirtyMinutesAgo = Date.now() - 30 * 60 * 1000;
     this.historicalData = this.historicalData.filter(
-      (d) => d.timestamp.getTime() > thirtyMinutesAgo
+      (d) => d.timestamp.getTime() > thirtyMinutesAgo,
     );
   }
 
@@ -111,23 +121,38 @@ class TrafficStore {
 
   // Dashboard stats
   getDashboardStats() {
-    const totalVehicles = Array.from(this.intersections.values()).reduce(
+    // Count total vehicles from intersections first
+    let totalVehicles = Array.from(this.intersections.values()).reduce(
       (sum, int) => sum + int.totalVehicles,
-      0
+      0,
     );
 
+    // If no intersection data, count from lanes (for integration script data)
+    if (totalVehicles === 0 && this.lanes.size > 0) {
+      totalVehicles = Array.from(this.lanes.values()).reduce(
+        (sum, lane) => sum + lane.vehicleCount,
+        0,
+      );
+    }
+
     const congestedLanes = Array.from(this.lanes.values()).filter(
-      (lane) => lane.density === "high"
+      (lane) => lane.density === "high",
     ).length;
 
-    const activeIntersections = this.intersections.size;
+    const activeIntersections =
+      this.intersections.size > 0
+        ? this.intersections.size
+        : this.lanes.size > 0
+          ? 1
+          : 0; // Count as 1 active intersection if we have lanes
+
     const emergencyAlerts = this.emergencyVehicles.size;
 
     const avgSpeed =
       this.lanes.size > 0
         ? Array.from(this.lanes.values()).reduce(
             (sum, lane) => sum + lane.averageSpeed,
-            0
+            0,
           ) / this.lanes.size
         : 0;
 
@@ -150,7 +175,7 @@ class TrafficStore {
 
     const cars = allDetections.filter((d) => d.type === "car").length;
     const bikes = allDetections.filter(
-      (d) => d.type === "bike" || d.type === "motorcycle"
+      (d) => d.type === "bike" || d.type === "motorcycle",
     ).length;
     const buses = allDetections.filter((d) => d.type === "bus").length;
     const trucks = allDetections.filter((d) => d.type === "truck").length;
@@ -197,6 +222,9 @@ class TrafficStore {
 export const trafficStore = new TrafficStore();
 
 // Cleanup every 5 minutes
-setInterval(() => {
-  trafficStore.cleanup();
-}, 5 * 60 * 1000);
+setInterval(
+  () => {
+    trafficStore.cleanup();
+  },
+  5 * 60 * 1000,
+);

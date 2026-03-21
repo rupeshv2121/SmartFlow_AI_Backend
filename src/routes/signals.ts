@@ -3,59 +3,43 @@ import {
   GetCongestionAnalyticsResponse,
   GetSignalTimingResponse,
 } from "../lib/api-zod";
-import { trafficStore } from "../store/traffic-store";
 import { trafficLightAlgorithm } from "../services/traffic-light-algorithm";
+import { trafficStore } from "../store/traffic-store";
 
 const router: IRouter = express.Router();
 
 const INTERSECTIONS = [
   {
-    id: "sig-a",
-    intersection: "Signal A - North/Central",
-    baseVehicles: 45,
-    density: "high" as const,
-    greenTime: 60,
-    cycleTime: 90,
-  },
-  {
-    id: "sig-b",
-    intersection: "Signal B - East/Central",
-    baseVehicles: 20,
-    density: "medium" as const,
-    greenTime: 40,
-    cycleTime: 70,
-  },
-  {
-    id: "sig-c",
-    intersection: "Signal C - South/West",
-    baseVehicles: 10,
-    density: "low" as const,
-    greenTime: 20,
-    cycleTime: 50,
-  },
-  {
-    id: "sig-d",
-    intersection: "Signal D - Market/Main",
-    baseVehicles: 67,
-    density: "high" as const,
-    greenTime: 65,
-    cycleTime: 95,
-  },
-  {
-    id: "sig-e",
-    intersection: "Signal E - Harbor/Bay",
-    baseVehicles: 33,
+    id: "signal-1",
+    intersection: "Signal-1 (Lane-1 Control)",
+    baseVehicles: 32,
     density: "medium" as const,
     greenTime: 45,
     cycleTime: 75,
   },
   {
-    id: "sig-f",
-    intersection: "Signal F - Airport Rd",
-    baseVehicles: 8,
+    id: "signal-2",
+    intersection: "Signal-2 (Lane-2 Control)",
+    baseVehicles: 47,
+    density: "high" as const,
+    greenTime: 60,
+    cycleTime: 90,
+  },
+  {
+    id: "signal-3",
+    intersection: "Signal-3 (Lane-3 Control)",
+    baseVehicles: 29,
+    density: "medium" as const,
+    greenTime: 40,
+    cycleTime: 70,
+  },
+  {
+    id: "signal-4",
+    intersection: "Signal-4 (Lane-4 Control)",
+    baseVehicles: 19,
     density: "low" as const,
-    greenTime: 18,
-    cycleTime: 48,
+    greenTime: 25,
+    cycleTime: 55,
   },
 ];
 
@@ -106,7 +90,8 @@ router.get("/signal-timing", (_req, res) => {
       if (vehicles > 55) density = "high";
       else if (vehicles > 25) density = "medium";
       else density = "low";
-      const greenTime = density === "high" ? 60 : density === "medium" ? 40 : 20;
+      const greenTime =
+        density === "high" ? 60 : density === "medium" ? 40 : 20;
       const c = phaseCounters[s.id];
       return {
         id: s.id,

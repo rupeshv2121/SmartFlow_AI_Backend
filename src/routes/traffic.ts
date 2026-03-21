@@ -14,59 +14,31 @@ const router: IRouter = express.Router();
 const LANES = [
   {
     id: "lane-1",
-    name: "North Ave - Lane 1",
-    density: "high" as const,
-    vehicleCount: 87,
-    speed: 18.5,
+    name: "Lane-1 (Camera Feed 1)",
+    density: "medium" as const,
+    vehicleCount: 32,
+    speed: 28.5,
   },
   {
     id: "lane-2",
-    name: "North Ave - Lane 2",
-    density: "medium" as const,
-    vehicleCount: 45,
-    speed: 35.2,
+    name: "Lane-2 (Camera Feed 2)",
+    density: "high" as const,
+    vehicleCount: 47,
+    speed: 18.2,
   },
   {
     id: "lane-3",
-    name: "Central Blvd - Lane 1",
-    density: "high" as const,
-    vehicleCount: 102,
-    speed: 12.1,
+    name: "Lane-3 (Camera Feed 3)",
+    density: "medium" as const,
+    vehicleCount: 29,
+    speed: 35.1,
   },
   {
     id: "lane-4",
-    name: "Central Blvd - Lane 2",
-    density: "medium" as const,
-    vehicleCount: 38,
-    speed: 42.0,
-  },
-  {
-    id: "lane-5",
-    name: "East St - Lane 1",
+    name: "Lane-4 (Camera Feed 4)",
     density: "low" as const,
-    vehicleCount: 14,
-    speed: 58.7,
-  },
-  {
-    id: "lane-6",
-    name: "West Rd - Lane 1",
-    density: "low" as const,
-    vehicleCount: 21,
-    speed: 52.3,
-  },
-  {
-    id: "lane-7",
-    name: "South Pkwy - Lane 1",
-    density: "medium" as const,
-    vehicleCount: 56,
-    speed: 29.8,
-  },
-  {
-    id: "lane-8",
-    name: "Market St - Lane 1",
-    density: "high" as const,
-    vehicleCount: 93,
-    speed: 15.2,
+    vehicleCount: 19,
+    speed: 42.3,
   },
 ];
 
@@ -146,11 +118,11 @@ router.get("/traffic-density/history", (_req, res) => {
       const t = new Date(now - i * 60000);
       const hour = t.getHours();
       const baseLoad =
-        hour >= 7 && hour <= 9 ? 380 : hour >= 17 && hour <= 19 ? 420 : 180;
-      const vehicles = Math.floor(baseLoad + Math.random() * 60 - 30);
+        hour >= 7 && hour <= 9 ? 140 : hour >= 17 && hour <= 19 ? 160 : 80;
+      const vehicles = Math.floor(baseLoad + Math.random() * 30 - 15);
       const congestion = Math.min(
         100,
-        Math.round((vehicles / 500) * 100 + Math.random() * 10),
+        Math.round((vehicles / 200) * 100 + Math.random() * 10),
       );
       data.push({
         time: t.toLocaleTimeString("en-US", {
@@ -180,11 +152,11 @@ router.get("/vehicle-counts", (_req, res) => {
     buses = realCounts.buses;
     trucks = realCounts.trucks;
   } else {
-    // Fallback to mock data
-    cars = Math.floor(820 + Math.random() * 100 - 50);
-    bikes = Math.floor(145 + Math.random() * 40 - 20);
-    buses = Math.floor(38 + Math.random() * 10 - 5);
-    trucks = Math.floor(62 + Math.random() * 20 - 10);
+    // Fallback to mock data - adjusted for 4-camera system
+    cars = Math.floor(85 + Math.random() * 30 - 15);
+    bikes = Math.floor(25 + Math.random() * 10 - 5);
+    buses = Math.floor(8 + Math.random() * 4 - 2);
+    trucks = Math.floor(12 + Math.random() * 6 - 3);
   }
 
   const data = GetVehicleCountsResponse.parse({
@@ -202,13 +174,24 @@ router.get("/dashboard-stats", (_req, res) => {
   // Get real stats from store
   const stats = trafficStore.getDashboardStats();
 
-  // If no real data, use mock data as fallback
+  // If we have real lane data, use actual stats (even if some are 0)
+  // Only use mock data if we have NO real data at all
+  const hasRealData = trafficStore.getAllLanes().length > 0;
+
   const data = GetDashboardStatsResponse.parse({
-    totalVehicles: stats.totalVehicles || Math.floor(1065 + Math.random() * 200 - 100),
-    activeIntersections: stats.activeIntersections || 12,
-    congestedLanes: stats.congestedLanes || Math.floor(3 + Math.random() * 3),
-    emergencyAlerts: stats.emergencyAlerts || (Math.random() > 0.7 ? 1 : 0),
-    avgSpeed: stats.avgSpeed || Math.round((28.4 + Math.random() * 8 - 4) * 10) / 10,
+    totalVehicles:
+      stats.totalVehicles ||
+      (!hasRealData ? Math.floor(127 + Math.random() * 50 - 25) : 0),
+    activeIntersections: stats.activeIntersections || (!hasRealData ? 4 : 1),
+    congestedLanes:
+      stats.congestedLanes ||
+      (!hasRealData ? Math.floor(3 + Math.random() * 3) : 0),
+    emergencyAlerts:
+      stats.emergencyAlerts ||
+      (!hasRealData ? (Math.random() > 0.7 ? 1 : 0) : 0),
+    avgSpeed:
+      stats.avgSpeed ||
+      (!hasRealData ? Math.round((28.4 + Math.random() * 8 - 4) * 10) / 10 : 0),
     systemStatus: stats.systemStatus,
   });
   res.json(data);
