@@ -32,47 +32,54 @@ class TrafficLightAlgorithm {
 
   /**
    * Calculate optimal green time based on traffic density
-   * Uses weighted algorithm considering:
-   * 1. Vehicle count
-   * 2. Density level
-   * 3. Time since last green (starvation prevention)
+   * ENHANCED VERSION - Matches Python algorithm implementation
+   * Formula: greenTime = baseTime + (vehicleCount * factor)
+   * Clamped between minGreenTime and maxGreenTime
+   *
+   * Priority considerations:
+   * 1. Vehicle count (direct proportional)
+   * 2. Emergency vehicle detection (boost green time)
+   * 3. Starvation prevention (minimum time guarantee)
    */
   calculateGreenTime(signalId: string): number {
     const signal = trafficStore.getSignal(signalId);
     if (!signal) return this.config.minGreenTime;
 
-    // Base time on density
-    let baseTime = 0;
-    switch (signal.density) {
-      case "high":
-        baseTime = 60;
-        break;
-      case "medium":
-        baseTime = 40;
-        break;
-      case "low":
-        baseTime = 20;
-        break;
-    }
+    // ENHANCED ALGORITHM: Base time + (vehicle count * factor)
+    // This matches the Python algorithm for consistency
+    const baseTime = 10; // Base green time in seconds
+    const factor = 2.0;   // Additional seconds per vehicle
 
-    // Adjust based on vehicle count
-    const vehicleMultiplier = Math.min(signal.vehicleCount / 50, 1.5);
-    let greenTime = baseTime * vehicleMultiplier;
+    let dynamicTime = baseTime + (signal.vehicleCount * factor);
+
+    // Emergency vehicle boost - ensure adequate green time
+    const lanes = trafficStore.getAllLanes();
+    const hasEmergency = lanes.some(
+      lane => lane.laneId === signalId &&
+      lane.detections.some(d =>
+        d.type === "ambulance" || d.type === "fire_truck" || d.type === "police"
+      )
+    );
+
+    if (hasEmergency) {
+      // Ensure emergency lanes get at least base + 5 seconds
+      dynamicTime = Math.max(dynamicTime, baseTime + 5);
+    }
 
     // Starvation prevention: If this signal hasn't been green for a while, prioritize it
     const lastGreen = this.lastGreenTime.get(signalId) || 0;
     const timeSinceGreen = Date.now() - lastGreen;
-    const starvationThreshold = 5 * 60 * 1000; // 5 minutes
+    const starvationThreshold = 3 * 60 * 1000; // 3 minutes
 
     if (timeSinceGreen > starvationThreshold) {
       // Force a reasonable green time even if density is low
-      greenTime = Math.max(greenTime, this.config.minGreenTime + 10);
+      dynamicTime = Math.max(dynamicTime, this.config.minGreenTime + 10);
     }
 
-    // Clamp to min/max
-    greenTime = Math.max(
+    // Clamp to min/max bounds
+    const greenTime = Math.max(
       this.config.minGreenTime,
-      Math.min(greenTime, this.config.maxGreenTime)
+      Math.min(this.config.maxGreenTime, dynamicTime)
     );
 
     return Math.round(greenTime);
