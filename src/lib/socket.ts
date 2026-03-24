@@ -17,7 +17,7 @@ export function setupSocketIO(httpServer: HTTPServer) {
     // Send initial data on connection
     socket.emit("initial-data", {
       intersections: trafficStore.getAllIntersections(),
-      lanes: trafficStore.getAllLanes(),
+      roads: trafficStore.getAllRoads(),
       signals: trafficStore.getAllSignals(),
       emergencyVehicles: trafficStore.getAllEmergencyVehicles(),
       dashboardStats: trafficStore.getDashboardStats(),
@@ -33,9 +33,9 @@ export function setupSocketIO(httpServer: HTTPServer) {
       socket.emit("intersection-data", data);
     });
 
-    socket.on("request-lane", (laneId: string) => {
-      const data = trafficStore.getLane(laneId);
-      socket.emit("lane-data", data);
+    socket.on("request-road", (roadId: string) => {
+      const data = trafficStore.getRoad(roadId);
+      socket.emit("road-data", data);
     });
   });
 

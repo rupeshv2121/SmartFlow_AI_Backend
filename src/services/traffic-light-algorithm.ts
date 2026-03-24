@@ -53,16 +53,16 @@ class TrafficLightAlgorithm {
     let dynamicTime = baseTime + (signal.vehicleCount * factor);
 
     // Emergency vehicle boost - ensure adequate green time
-    const lanes = trafficStore.getAllLanes();
-    const hasEmergency = lanes.some(
-      lane => lane.laneId === signalId &&
-      lane.detections.some(d =>
+    const roads = trafficStore.getAllRoads();
+    const hasEmergency = roads.some(
+      road => road.roadId === signalId &&
+      road.detections.some(d =>
         d.type === "ambulance" || d.type === "fire_truck" || d.type === "police"
       )
     );
 
     if (hasEmergency) {
-      // Ensure emergency lanes get at least base + 5 seconds
+      // Ensure emergency roads get at least base + 5 seconds
       dynamicTime = Math.max(dynamicTime, baseTime + 5);
     }
 

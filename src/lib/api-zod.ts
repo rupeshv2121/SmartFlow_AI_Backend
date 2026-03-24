@@ -9,7 +9,7 @@ export const HealthCheckResponse = z.object({
 });
 
 export const GetTrafficDensityResponse = z.object({
-  lanes: z.array(
+  roads: z.array(
     z.object({
       id: z.string(),
       name: z.string(),
@@ -43,7 +43,7 @@ export const GetVehicleCountsResponse = z.object({
 export const GetDashboardStatsResponse = z.object({
   totalVehicles: z.number(),
   activeIntersections: z.number(),
-  congestedLanes: z.number(),
+  congestedRoads: z.number(),
   emergencyAlerts: z.number(),
   avgSpeed: z.number(),
   systemStatus: z.string(),
@@ -159,8 +159,8 @@ export const GetIntersectionVideoResponse = z.object({
   resolution: z.string(),
 });
 
-export const GetLaneDensityResponse = z.object({
-  lanes: z.array(
+export const GetRoadDensityResponse = z.object({
+  roads: z.array(
     z.object({
       id: z.string(),
       name: z.string(),

@@ -4,14 +4,14 @@
 import type {
   EmergencyVehicleData,
   IntersectionData,
-  LaneData,
+  RoadData,
   TrafficSignalState,
   VehicleDetection,
 } from "../types/ai-models";
 
 class TrafficStore {
   private intersections: Map<string, IntersectionData> = new Map();
-  private lanes: Map<string, LaneData> = new Map();
+  private roads: Map<string, RoadData> = new Map();
   private signals: Map<string, TrafficSignalState> = new Map();
   private emergencyVehicles: Map<string, EmergencyVehicleData> = new Map();
   private activeCorridors: Map<string, EmergencyVehicleData> = new Map();
@@ -24,9 +24,9 @@ class TrafficStore {
   // Intersection methods
   updateIntersection(data: IntersectionData): void {
     this.intersections.set(data.intersectionId, data);
-    // Update lanes as well
-    data.lanes.forEach((lane) => {
-      this.lanes.set(lane.laneId, lane);
+    // Update roads as well
+    data.roads.forEach((road) => {
+      this.roads.set(road.roadId, road);
     });
     // Add to historical data
     this.addHistoricalData(data.totalVehicles, data.congestionLevel);
@@ -40,12 +40,12 @@ class TrafficStore {
     return Array.from(this.intersections.values());
   }
 
-  // Lane methods
-  updateLane(data: LaneData): void {
-    this.lanes.set(data.laneId, data);
-    // Also update historical data when we get new lane data
-    const totalVehicles = Array.from(this.lanes.values()).reduce(
-      (sum, lane) => sum + lane.vehicleCount,
+  // Road methods
+  updateRoad(data: RoadData): void {
+    this.roads.set(data.roadId, data);
+    // Also update historical data when we get new road data
+    const totalVehicles = Array.from(this.roads.values()).reduce(
+      (sum, road) => sum + road.vehicleCount,
       0
     );
     const congestionPercentage = Math.min(
@@ -55,12 +55,12 @@ class TrafficStore {
     this.addHistoricalData(totalVehicles, congestionPercentage);
   }
 
-  getLane(laneId: string): LaneData | undefined {
-    return this.lanes.get(laneId);
+  getRoad(roadId: string): RoadData | undefined {
+    return this.roads.get(roadId);
   }
 
-  getAllLanes(): LaneData[] {
-    return Array.from(this.lanes.values());
+  getAllRoads(): RoadData[] {
+    return Array.from(this.roads.values());
   }
 
   // Signal methods
@@ -127,39 +127,39 @@ class TrafficStore {
       0,
     );
 
-    // If no intersection data, count from lanes (for integration script data)
-    if (totalVehicles === 0 && this.lanes.size > 0) {
-      totalVehicles = Array.from(this.lanes.values()).reduce(
-        (sum, lane) => sum + lane.vehicleCount,
+    // If no intersection data, count from roads (for integration script data)
+    if (totalVehicles === 0 && this.roads.size > 0) {
+      totalVehicles = Array.from(this.roads.values()).reduce(
+        (sum, road) => sum + road.vehicleCount,
         0,
       );
     }
 
-    const congestedLanes = Array.from(this.lanes.values()).filter(
-      (lane) => lane.density === "high",
+    const congestedRoads = Array.from(this.roads.values()).filter(
+      (road) => road.density === "high",
     ).length;
 
     const activeIntersections =
       this.intersections.size > 0
         ? this.intersections.size
-        : this.lanes.size > 0
+        : this.roads.size > 0
           ? 1
-          : 0; // Count as 1 active intersection if we have lanes
+          : 0; // Count as 1 active intersection if we have roads
 
     const emergencyAlerts = this.emergencyVehicles.size;
 
     const avgSpeed =
-      this.lanes.size > 0
-        ? Array.from(this.lanes.values()).reduce(
-            (sum, lane) => sum + lane.averageSpeed,
+      this.roads.size > 0
+        ? Array.from(this.roads.values()).reduce(
+            (sum, road) => sum + road.averageSpeed,
             0,
-          ) / this.lanes.size
+          ) / this.roads.size
         : 0;
 
     return {
       totalVehicles,
       activeIntersections,
-      congestedLanes,
+      congestedRoads,
       emergencyAlerts,
       avgSpeed: Math.round(avgSpeed * 10) / 10,
       systemStatus: "operational" as const,
@@ -169,8 +169,8 @@ class TrafficStore {
   // Vehicle counts by type
   getVehicleCounts() {
     const allDetections: VehicleDetection[] = [];
-    this.lanes.forEach((lane) => {
-      allDetections.push(...lane.detections);
+    this.roads.forEach((road) => {
+      allDetections.push(...road.detections);
     });
 
     const cars = allDetections.filter((d) => d.type === "car").length;
@@ -200,10 +200,10 @@ class TrafficStore {
       }
     }
 
-    // Remove stale lanes
-    for (const [id, data] of this.lanes.entries()) {
+    // Remove stale roads
+    for (const [id, data] of this.roads.entries()) {
       if (data.timestamp.getTime() < fiveMinutesAgo) {
-        this.lanes.delete(id);
+        this.roads.delete(id);
       }
     }
 

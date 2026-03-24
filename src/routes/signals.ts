@@ -11,7 +11,7 @@ const router: IRouter = express.Router();
 const INTERSECTIONS = [
   {
     id: "signal-1",
-    intersection: "Signal-1 (Lane-1 Control)",
+    intersection: "Signal-1 (Road-1 Control)",
     baseVehicles: 32,
     density: "medium" as const,
     greenTime: 45,
@@ -19,7 +19,7 @@ const INTERSECTIONS = [
   },
   {
     id: "signal-2",
-    intersection: "Signal-2 (Lane-2 Control)",
+    intersection: "Signal-2 (Road-2 Control)",
     baseVehicles: 47,
     density: "high" as const,
     greenTime: 60,
@@ -27,7 +27,7 @@ const INTERSECTIONS = [
   },
   {
     id: "signal-3",
-    intersection: "Signal-3 (Lane-3 Control)",
+    intersection: "Signal-3 (Road-3 Control)",
     baseVehicles: 29,
     density: "medium" as const,
     greenTime: 40,
@@ -35,7 +35,7 @@ const INTERSECTIONS = [
   },
   {
     id: "signal-4",
-    intersection: "Signal-4 (Lane-4 Control)",
+    intersection: "Signal-4 (Road-4 Control)",
     baseVehicles: 19,
     density: "low" as const,
     greenTime: 25,
@@ -125,8 +125,8 @@ router.get("/congestion-analytics", (_req, res) => {
       congestion: int.congestionLevel,
       vehicles: int.totalVehicles,
       avgSpeed:
-        int.lanes.reduce((sum, lane) => sum + lane.averageSpeed, 0) /
-        (int.lanes.length || 1),
+        int.roads.reduce((sum, road) => sum + road.averageSpeed, 0) /
+        (int.roads.length || 1),
     }));
   } else {
     // Fallback to mock data

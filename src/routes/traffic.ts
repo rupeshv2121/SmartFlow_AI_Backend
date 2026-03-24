@@ -2,7 +2,7 @@ import express, { type IRouter } from "express";
 import {
   GetCityHeatmapResponse,
   GetDashboardStatsResponse,
-  GetLaneDensityResponse,
+  GetRoadDensityResponse,
   GetTrafficDensityHistoryResponse,
   GetTrafficDensityResponse,
   GetVehicleCountsResponse,
@@ -11,31 +11,31 @@ import { trafficStore } from "../store/traffic-store";
 
 const router: IRouter = express.Router();
 
-const LANES = [
+const ROADS = [
   {
-    id: "lane-1",
-    name: "Lane-1 (Camera Feed 1)",
+    id: "road-1",
+    name: "Road-1 (Camera Feed 1)",
     density: "medium" as const,
     vehicleCount: 32,
     speed: 28.5,
   },
   {
-    id: "lane-2",
-    name: "Lane-2 (Camera Feed 2)",
+    id: "road-2",
+    name: "Road-2 (Camera Feed 2)",
     density: "high" as const,
     vehicleCount: 47,
     speed: 18.2,
   },
   {
-    id: "lane-3",
-    name: "Lane-3 (Camera Feed 3)",
+    id: "road-3",
+    name: "Road-3 (Camera Feed 3)",
     density: "medium" as const,
     vehicleCount: 29,
     speed: 35.1,
   },
   {
-    id: "lane-4",
-    name: "Lane-4 (Camera Feed 4)",
+    id: "road-4",
+    name: "Road-4 (Camera Feed 4)",
     density: "low" as const,
     vehicleCount: 19,
     speed: 42.3,
@@ -56,30 +56,30 @@ function randomize<T extends object>(base: T, variance = 0.1): T {
 
 router.get("/traffic-density", (_req, res) => {
   // Try to get real data from store
-  const realLanes = trafficStore.getAllLanes();
+  const realRoads = trafficStore.getAllRoads();
 
-  let lanes;
-  if (realLanes.length > 0) {
+  let roads;
+  if (realRoads.length > 0) {
     // Use real data from AI models
-    lanes = realLanes.map((lane) => ({
-      id: lane.laneId,
-      name: lane.laneName,
-      density: lane.density,
-      vehicleCount: lane.vehicleCount,
-      speed: lane.averageSpeed,
+    roads = realRoads.map((road) => ({
+      id: road.roadId,
+      name: road.roadName,
+      density: road.density,
+      vehicleCount: road.vehicleCount,
+      speed: road.averageSpeed,
     }));
   } else {
     // Fallback to mock data if no real data available
-    lanes = LANES.map((lane) => {
+    roads = ROADS.map((road) => {
       const jitter = Math.floor(Math.random() * 10 - 5);
-      const count = Math.max(1, lane.vehicleCount + jitter);
-      const speed = Math.max(5, lane.speed + Math.random() * 4 - 2);
-      let density: "low" | "medium" | "high" = lane.density;
+      const count = Math.max(1, road.vehicleCount + jitter);
+      const speed = Math.max(5, road.speed + Math.random() * 4 - 2);
+      let density: "low" | "medium" | "high" = road.density;
       if (count > 80) density = "high";
       else if (count > 40) density = "medium";
       else density = "low";
       return {
-        ...lane,
+        ...road,
         vehicleCount: count,
         speed: Math.round(speed * 10) / 10,
         density,
@@ -88,7 +88,7 @@ router.get("/traffic-density", (_req, res) => {
   }
 
   const data = GetTrafficDensityResponse.parse({
-    lanes,
+    roads,
     timestamp: new Date().toISOString(),
   });
   res.json(data);
@@ -174,17 +174,17 @@ router.get("/dashboard-stats", (_req, res) => {
   // Get real stats from store
   const stats = trafficStore.getDashboardStats();
 
-  // If we have real lane data, use actual stats (even if some are 0)
+  // If we have real road data, use actual stats (even if some are 0)
   // Only use mock data if we have NO real data at all
-  const hasRealData = trafficStore.getAllLanes().length > 0;
+  const hasRealData = trafficStore.getAllRoads().length > 0;
 
   const data = GetDashboardStatsResponse.parse({
     totalVehicles:
       stats.totalVehicles ||
       (!hasRealData ? Math.floor(127 + Math.random() * 50 - 25) : 0),
     activeIntersections: stats.activeIntersections || (!hasRealData ? 4 : 1),
-    congestedLanes:
-      stats.congestedLanes ||
+    congestedRoads:
+      stats.congestedRoads ||
       (!hasRealData ? Math.floor(3 + Math.random() * 3) : 0),
     emergencyAlerts:
       stats.emergencyAlerts ||
@@ -197,34 +197,34 @@ router.get("/dashboard-stats", (_req, res) => {
   res.json(data);
 });
 
-router.get("/lane-density", (_req, res) => {
+router.get("/road-density", (_req, res) => {
   // Try to get real data from store
-  const realLanes = trafficStore.getAllLanes();
+  const realRoads = trafficStore.getAllRoads();
 
-  let lanes;
-  if (realLanes.length > 0) {
+  let roads;
+  if (realRoads.length > 0) {
     // Use real data
-    lanes = realLanes.map((lane) => ({
-      id: lane.laneId,
-      name: lane.laneName,
-      density: lane.density,
-      vehicleCount: lane.vehicleCount,
-      speed: lane.averageSpeed,
+    roads = realRoads.map((road) => ({
+      id: road.roadId,
+      name: road.roadName,
+      density: road.density,
+      vehicleCount: road.vehicleCount,
+      speed: road.averageSpeed,
     }));
   } else {
     // Fallback to mock data
-    lanes = LANES.map((lane) => {
+    roads = ROADS.map((road) => {
       const jitter = Math.floor(Math.random() * 8 - 4);
-      const count = Math.max(1, lane.vehicleCount + jitter);
-      let density: "low" | "medium" | "high" = lane.density;
+      const count = Math.max(1, road.vehicleCount + jitter);
+      let density: "low" | "medium" | "high" = road.density;
       if (count > 80) density = "high";
       else if (count > 40) density = "medium";
       else density = "low";
-      return { ...lane, vehicleCount: count, density };
+      return { ...road, vehicleCount: count, density };
     });
   }
 
-  const data = GetLaneDensityResponse.parse({ lanes });
+  const data = GetRoadDensityResponse.parse({ roads });
   res.json(data);
 });
 

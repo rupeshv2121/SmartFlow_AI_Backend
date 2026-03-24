@@ -3,7 +3,7 @@ import express, { type IRouter } from "express";
 import { trafficStore } from "../store/traffic-store";
 import type {
   IntersectionData,
-  LaneData,
+  RoadData,
   EmergencyVehicleData,
   VehicleDetection,
 } from "../types/ai-models";
@@ -15,16 +15,16 @@ const router: IRouter = express.Router();
  * Receives vehicle detection data from YOLO model
  * Body: {
  *   intersectionId: string,
- *   laneId: string,
- *   laneName: string,
+ *   roadId: string,
+ *   roadName: string,
  *   detections: VehicleDetection[]
  * }
  */
 router.post("/vehicle-detection", (req, res) => {
   try {
-    const { intersectionId, laneId, laneName, detections } = req.body;
+    const { intersectionId, roadId, roadName, detections } = req.body;
 
-    if (!intersectionId || !laneId || !Array.isArray(detections)) {
+    if (!intersectionId || !roadId || !Array.isArray(detections)) {
       res.status(400).json({ error: "Invalid request body" });
       return;
     }
@@ -40,10 +40,10 @@ router.post("/vehicle-detection", (req, res) => {
     if (vehicleCount > 15) density = "high";
     else if (vehicleCount > 7) density = "medium";
 
-    // Create lane data
-    const laneData: LaneData = {
-      laneId,
-      laneName: laneName || `Lane ${laneId}`,
+    // Create road data
+    const roadData: RoadData = {
+      roadId,
+      roadName: roadName || `Road ${roadId}`,
       vehicleCount,
       density,
       averageSpeed: Math.round(averageSpeed * 10) / 10,
@@ -52,7 +52,7 @@ router.post("/vehicle-detection", (req, res) => {
     };
 
     // Update store
-    trafficStore.updateLane(laneData);
+    trafficStore.updateRoad(roadData);
 
     // Check for emergency vehicles
     const emergencyVehicles = detections.filter(
@@ -78,7 +78,7 @@ router.post("/vehicle-detection", (req, res) => {
       if (io) {
         io.emit("emergency-vehicle-detected", {
           intersectionId,
-          laneId,
+          roadId,
           vehicles: emergencyVehicles,
           timestamp: new Date().toISOString(),
         });
@@ -88,12 +88,12 @@ router.post("/vehicle-detection", (req, res) => {
     // Broadcast update via Socket.io
     const io = req.app.get("io");
     if (io) {
-      io.emit("lane-updated", laneData);
+      io.emit("road-updated", roadData);
     }
 
     res.json({
       success: true,
-      laneId,
+      roadId,
       vehicleCount,
       density,
       emergencyVehiclesDetected: emergencyVehicles.length,
@@ -113,7 +113,7 @@ router.post("/intersection-update", (req, res) => {
   try {
     const data: IntersectionData = req.body;
 
-    if (!data.intersectionId || !Array.isArray(data.lanes)) {
+    if (!data.intersectionId || !Array.isArray(data.roads)) {
       res.status(400).json({ error: "Invalid intersection data" });
       return;
     }
@@ -216,7 +216,7 @@ router.get("/status", (req, res) => {
   try {
     const stats = {
       intersections: trafficStore.getAllIntersections().length,
-      lanes: trafficStore.getAllLanes().length,
+      roads: trafficStore.getAllRoads().length,
       signals: trafficStore.getAllSignals().length,
       emergencyVehicles: trafficStore.getAllEmergencyVehicles().length,
       activeCorridors: trafficStore.getActiveCorridors().length,

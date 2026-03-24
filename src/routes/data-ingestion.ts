@@ -3,7 +3,7 @@ import { trafficStore } from "../store/traffic-store";
 import type {
   EmergencyVehicleData,
   IntersectionData,
-  LaneData,
+  RoadData,
   TrafficSignalState,
 } from "../types/ai-models";
 
@@ -20,10 +20,10 @@ const router: IRouter = express.Router();
  *   "totalVehicles": 45,
  *   "congestionLevel": 65,
  *   "timestamp": "2024-03-21T10:30:00Z",
- *   "lanes": [
+ *   "roads": [
  *     {
- *       "laneId": "lane-001",
- *       "laneName": "Main St - Lane 1",
+ *       "roadId": "road-001",
+ *       "roadName": "Main St - Road 1",
  *       "density": "high",
  *       "vehicleCount": 23,
  *       "averageSpeed": 15.5,
@@ -38,10 +38,10 @@ router.post("/ingest/intersection", (req, res) => {
     const data: IntersectionData = {
       ...req.body,
       timestamp: new Date(req.body.timestamp || Date.now()),
-      lanes: req.body.lanes.map((lane: any) => ({
-        ...lane,
-        timestamp: new Date(lane.timestamp || Date.now()),
-        detections: lane.detections || [],
+      roads: req.body.roads.map((road: any) => ({
+        ...road,
+        timestamp: new Date(road.timestamp || Date.now()),
+        detections: road.detections || [],
       })),
     };
 
@@ -63,13 +63,13 @@ router.post("/ingest/intersection", (req, res) => {
 });
 
 /**
- * POST /api/ingest/lane
- * Receive real-time lane data from AI models
+ * POST /api/ingest/road
+ * Receive real-time road data from AI models
  *
  * Example payload:
  * {
- *   "laneId": "lane-001",
- *   "laneName": "Main St - Lane 1",
+ *   "roadId": "road-001",
+ *   "roadName": "Main St - Road 1",
  *   "density": "high",
  *   "vehicleCount": 23,
  *   "averageSpeed": 15.5,
@@ -86,9 +86,9 @@ router.post("/ingest/intersection", (req, res) => {
  *   "timestamp": "2024-03-21T10:30:00Z"
  * }
  */
-router.post("/ingest/lane", (req, res) => {
+router.post("/ingest/road", (req, res) => {
   try {
-    const data: LaneData = {
+    const data: RoadData = {
       ...req.body,
       timestamp: new Date(req.body.timestamp || Date.now()),
       detections: req.body.detections.map((det: any) => ({
@@ -97,16 +97,16 @@ router.post("/ingest/lane", (req, res) => {
       })),
     };
 
-    // Update traffic store with real lane data
-    trafficStore.updateLane(data);
+    // Update traffic store with real road data
+    trafficStore.updateRoad(data);
 
     res.json({
       success: true,
-      message: "Lane data updated",
-      laneId: data.laneId,
+      message: "Road data updated",
+      roadId: data.roadId,
     });
   } catch (error) {
-    console.error("Error ingesting lane data:", error);
+    console.error("Error ingesting road data:", error);
     res.status(400).json({
       success: false,
       error: error instanceof Error ? error.message : "Invalid data format",
@@ -223,7 +223,7 @@ router.post("/ingest/signal", (req, res) => {
  * Example payload:
  * {
  *   "intersections": [...],
- *   "lanes": [...],
+ *   "roads": [...],
  *   "emergencyVehicles": [...],
  *   "signals": [...]
  * }
@@ -232,7 +232,7 @@ router.post("/ingest/batch", (req, res) => {
   try {
     const {
       intersections = [],
-      lanes = [],
+      roads = [],
       emergencyVehicles = [],
       signals = [],
     } = req.body;
@@ -243,27 +243,27 @@ router.post("/ingest/batch", (req, res) => {
       const data: IntersectionData = {
         ...int,
         timestamp: new Date(int.timestamp || Date.now()),
-        lanes: int.lanes.map((lane: any) => ({
-          ...lane,
-          timestamp: new Date(lane.timestamp || Date.now()),
-          detections: lane.detections || [],
+        roads: int.roads.map((road: any) => ({
+          ...road,
+          timestamp: new Date(road.timestamp || Date.now()),
+          detections: road.detections || [],
         })),
       };
       trafficStore.updateIntersection(data);
       updated++;
     });
 
-    // Update lanes
-    lanes.forEach((lane: any) => {
-      const data: LaneData = {
-        ...lane,
-        timestamp: new Date(lane.timestamp || Date.now()),
-        detections: lane.detections.map((det: any) => ({
+    // Update roads
+    roads.forEach((road: any) => {
+      const data: RoadData = {
+        ...road,
+        timestamp: new Date(road.timestamp || Date.now()),
+        detections: road.detections.map((det: any) => ({
           ...det,
           timestamp: new Date(det.timestamp || Date.now()),
         })),
       };
-      trafficStore.updateLane(data);
+      trafficStore.updateRoad(data);
       updated++;
     });
 
@@ -308,7 +308,7 @@ router.post("/ingest/batch", (req, res) => {
 router.get("/ingest/status", (_req, res) => {
   const stats = trafficStore.getDashboardStats();
   const intersections = trafficStore.getAllIntersections();
-  const lanes = trafficStore.getAllLanes();
+  const roads = trafficStore.getAllRoads();
   const emergencyVehicles = trafficStore.getAllEmergencyVehicles();
   const signals = trafficStore.getAllSignals();
 
@@ -316,7 +316,7 @@ router.get("/ingest/status", (_req, res) => {
     status: "operational",
     dataCount: {
       intersections: intersections.length,
-      lanes: lanes.length,
+      roads: roads.length,
       emergencyVehicles: emergencyVehicles.length,
       signals: signals.length,
     },

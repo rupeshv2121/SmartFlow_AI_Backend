@@ -8,13 +8,13 @@ export interface VehicleDetection {
   width: number;
   height: number;
   confidence: number;
-  lane?: string;
+  road?: string;
   speed?: number;
 }
 
-export interface LaneData {
-  laneId: string;
-  laneName: string;
+export interface RoadData {
+  roadId: string;
+  roadName: string;
   vehicleCount: number;
   density: "low" | "medium" | "high";
   averageSpeed: number;
@@ -25,7 +25,7 @@ export interface LaneData {
 export interface IntersectionData {
   intersectionId: string;
   intersectionName: string;
-  lanes: LaneData[];
+  roads: RoadData[];
   totalVehicles: number;
   congestionLevel: number; // 0-100
   emergencyVehicleDetected: boolean;
