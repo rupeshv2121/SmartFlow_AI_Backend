@@ -11,7 +11,7 @@ const router: IRouter = express.Router();
 const INTERSECTIONS = [
   {
     id: "signal-1",
-    intersection: "Signal-1 (Road-1 Control)",
+    intersection: "Signal-1 (Road-1)",
     baseVehicles: 32,
     density: "medium" as const,
     greenTime: 45,
@@ -19,7 +19,7 @@ const INTERSECTIONS = [
   },
   {
     id: "signal-2",
-    intersection: "Signal-2 (Road-2 Control)",
+    intersection: "Signal-2 (Road-2)",
     baseVehicles: 47,
     density: "high" as const,
     greenTime: 60,
@@ -27,7 +27,7 @@ const INTERSECTIONS = [
   },
   {
     id: "signal-3",
-    intersection: "Signal-3 (Road-3 Control)",
+    intersection: "Signal-3 (Road-3)",
     baseVehicles: 29,
     density: "medium" as const,
     greenTime: 40,
@@ -35,7 +35,7 @@ const INTERSECTIONS = [
   },
   {
     id: "signal-4",
-    intersection: "Signal-4 (Road-4 Control)",
+    intersection: "Signal-4 (Road-4)",
     baseVehicles: 19,
     density: "low" as const,
     greenTime: 25,

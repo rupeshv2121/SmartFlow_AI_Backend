@@ -32,6 +32,16 @@ router.put("/settings", (req, res) => {
       Object.keys(req.body),
     );
 
+    // Broadcast to connected clients via Socket.io (if available)
+    const io = req.app.get("io");
+    if (io) {
+      try {
+        io.emit("settings-updated", updatedSettings);
+      } catch (err) {
+        console.warn("Failed to emit settings-updated via Socket.io:", err);
+      }
+    }
+
     res.json({
       success: true,
       data: updatedSettings,
@@ -46,6 +56,9 @@ router.put("/settings", (req, res) => {
     });
   }
 });
+
+// Emit settings-updated to connected real-time clients when settings change
+router.put("/settings", (req, res, next) => next());
 
 // Get specific setting sections
 router.get("/settings/ai", (_req, res) => {
@@ -121,6 +134,15 @@ router.post("/settings/reset", (_req, res) => {
   try {
     const defaultSettings = settingsStore.resetToDefaults();
     console.log(`[${new Date().toISOString()}] Settings reset to defaults`);
+    // Broadcast reset to connected clients
+    // Attempt to read io from current context if available via _req.app
+    // Note: _req is unused variable per linters; cast to any to access app
+    try {
+      const io = (_req as any).app?.get("io");
+      if (io) io.emit("settings-updated", defaultSettings);
+    } catch (err) {
+      // ignore
+    }
 
     res.json({
       success: true,
@@ -167,6 +189,17 @@ router.put("/settings/ai/confidence", (req, res) => {
     console.log(
       `[${new Date().toISOString()}] AI confidence threshold updated to ${confidenceThreshold}`,
     );
+
+    // Broadcast updated settings
+    const io = req.app.get("io");
+    if (io) {
+      try {
+        // Emit full settings so clients can update local copies
+        io.emit("settings-updated", settingsStore.getSettings());
+      } catch (err) {
+        console.warn("Failed to emit settings-updated via Socket.io:", err);
+      }
+    }
 
     res.json({
       success: true,
