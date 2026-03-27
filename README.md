@@ -180,6 +180,40 @@ cd SmartFlow_AI_Backend
 ```
 
 2. **Install dependencies**
+## 🛠 Technology Stack
+
+| Category | Technology | Version | Purpose |
+|----------|-----------|---------|---------|
+| **Runtime** | Node.js | 18+ | JavaScript runtime |
+| **Framework** | Express | 5.0 | Web application framework |
+| **Language** | TypeScript | 5.6 | Type-safe development |
+| **Real-time** | Socket.io | 4.8.3 | WebSocket communication |
+| **Validation** | Zod | 3.25.76 | Schema validation |
+| **Build Tool** | esbuild | 0.27.3 | Fast bundling |
+| **Dev Server** | tsx | 4.20.6 | TypeScript execution |
+| **Database** | better-sqlite3 | 12.8.0 | Local data persistence (optional) |
+| **ORM** | Drizzle ORM | 0.45.1 | Type-safe database queries |
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- **Node.js** 18 or higher
+- **npm** or **yarn** package manager
+- **Git** for version control
+
+### Installation
+
+1. **Clone the repository**
+
+```bash
+git clone <repository-url>
+cd SmartFlow_AI_Backend
+```
+
+2. **Install dependencies**
 
 ```bash
 npm install
@@ -196,8 +230,22 @@ CORS_ORIGIN=http://localhost:5173,http://localhost:3000
 ```
 
 4. **Start development server**
+```
+
+3. **Configure environment variables** (optional)
+
+Create a `.env` file in the root directory:
+
+```env
+PORT=3000
+NODE_ENV=development
+CORS_ORIGIN=http://localhost:5173,http://localhost:3000
+```
+
+4. **Start development server**
 
 ```bash
+npm run dev
 npm run dev
 ```
 
@@ -665,6 +713,52 @@ socket.on('emergency-vehicle-detected', (alert) => {
   console.log('🚨 Emergency vehicle detected:', alert);
 });
 ```
+## 🔄 Real-time Events
+
+The backend uses Socket.io for real-time bidirectional communication.
+
+### Server-to-Client Events
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `initial-data` | `{ intersections, roads, signals, emergencyVehicles, dashboardStats }` | Sent on client connection with complete state snapshot |
+| `road-updated` | `RoadData` | Emitted when road traffic data changes |
+| `intersection-updated` | `IntersectionData` | Emitted when intersection data updates |
+| `dashboard-stats` | `DashboardStats` | Real-time dashboard statistics |
+| `emergency-vehicle-detected` | `{ vehicleId, type, currentIntersection, priority, timestamp }` | Emergency vehicle detection alert |
+| `emergency-vehicle-cleared` | `{ vehicleId }` | Emergency vehicle completed route |
+| `settings-updated` | `SystemSettings` | System settings changed |
+
+### Client-to-Server Events
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `request-intersection` | `intersectionId: string` | Request specific intersection data |
+| `request-road` | `roadId: string` | Request specific road data |
+
+### Connection Example
+
+```typescript
+import io from 'socket.io-client';
+
+const socket = io('http://localhost:3000');
+
+socket.on('connect', () => {
+  console.log('Connected to SmartFlow Backend');
+});
+
+socket.on('initial-data', (data) => {
+  console.log('Initial state:', data);
+});
+
+socket.on('road-updated', (roadData) => {
+  console.log('Road updated:', roadData);
+});
+
+socket.on('emergency-vehicle-detected', (alert) => {
+  console.log('🚨 Emergency vehicle detected:', alert);
+});
+```
 
 ---
 
@@ -717,12 +811,51 @@ curl -X POST http://localhost:3000/api/ingest/batch \
 ---
 
 ## 💻 Development
+## 💻 Development
 
+### Available Scripts
 ### Available Scripts
 
 ```bash
 # Development server with hot reload
+# Development server with hot reload
 npm run dev
+
+# Type checking
+npm run typecheck
+
+# Build for production
+npm run build
+
+# Start production server
+npm start
+```
+
+### Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `PORT` | `3000` | Server port |
+| `NODE_ENV` | `development` | Environment (development/production) |
+| `CORS_ORIGIN` | `*` | Allowed CORS origins (comma-separated) |
+
+### Development Workflow
+
+1. **Edit TypeScript files** in `src/` directory
+2. **Hot reload** automatically restarts server (via `tsx`)
+3. **Type check** with `npm run typecheck`
+4. **Test endpoints** with curl/Postman
+5. **Monitor console** for Socket.io connections and API requests
+
+### Code Style Guidelines
+
+- Use **TypeScript** for all new code
+- Define **types** in `src/types/ai-models.ts`
+- Add **Zod schemas** in `src/lib/api-zod.ts` for validation
+- Follow **Express middleware** patterns
+- Use **async/await** for asynchronous operations
+- Log important events with **ISO timestamps**
+
 
 # Type checking
 npm run typecheck
@@ -834,9 +967,106 @@ Real-time event system:
 - Broadcasts updates to all clients
 - Supports client data requests
 - Handles disconnections gracefully
+## 📁 Project Structure
+
+```
+SmartFlow_AI_Backend/
+├── src/
+│   ├── index.ts                          # Server entry point
+│   ├── app.ts                            # Express app configuration
+│   │
+│   ├── routes/                           # API route handlers
+│   │   ├── index.ts                      # Route aggregation
+│   │   ├── ai-input.ts                   # /api/ai/* - AI model integration
+│   │   ├── data-ingestion.ts             # /api/ingest/* - Data ingestion
+│   │   ├── traffic.ts                    # /api/traffic-* - Traffic analytics
+│   │   ├── signals.ts                    # /api/signal-* - Signal control
+│   │   ├── emergency.ts                  # /api/emergency-* - Emergency management
+│   │   ├── intersections.ts              # Intersection endpoints
+│   │   ├── settings.ts                   # /api/settings/* - System settings
+│   │   └── health.ts                     # /api/health - Health check
+│   │
+│   ├── services/                         # Business logic
+│   │   ├── traffic-light-algorithm.ts    # Dynamic signal timing calculation
+│   │   └── green-corridor.ts             # Emergency corridor management
+│   │
+│   ├── store/                            # In-memory state management
+│   │   ├── traffic-store.ts              # Traffic data store
+│   │   └── settings-store.ts             # System settings store
+│   │
+│   ├── lib/                              # Utilities
+│   │   ├── socket.ts                     # Socket.io server setup
+│   │   └── api-zod.ts                    # Zod validation schemas
+│   │
+│   └── types/                            # TypeScript type definitions
+│       └── ai-models.ts                  # Request/response types
+│
+├── dist/                                 # Built output (generated)
+├── node_modules/                         # Dependencies
+├── build.ts                              # esbuild configuration
+├── tsconfig.json                         # TypeScript configuration
+├── package.json                          # Project metadata
+└── README.md                             # This file
+```
+
+### Key Components
+
+#### **Traffic Store** (`src/store/traffic-store.ts`)
+In-memory storage for:
+- Intersections (multi-road junctions)
+- Roads (individual traffic lanes)
+- Signals (traffic light states)
+- Emergency vehicles (active alerts)
+- Historical data (30-minute rolling window)
+
+#### **Traffic Light Algorithm** (`src/services/traffic-light-algorithm.ts`)
+Calculates optimal green light duration based on:
+- Current vehicle count
+- Traffic density (low/medium/high)
+- Congestion level
+- Historical patterns
+- Emergency vehicle priority
+
+#### **Green Corridor Service** (`src/services/green-corridor.ts`)
+Manages emergency vehicle routing:
+- Activates green corridors for priority vehicles
+- Overrides normal signal timing
+- Calculates estimated clear time
+- Broadcasts real-time alerts
+
+#### **Socket.io Integration** (`src/lib/socket.ts`)
+Real-time event system:
+- Sends initial data snapshot on connection
+- Broadcasts updates to all clients
+- Supports client data requests
+- Handles disconnections gracefully
 
 ---
 
+## ⚡ Performance Optimization
+
+Based on the SmartFlow AI system optimizations:
+
+### Backend Optimizations
+- **Frame skipping prevention** - Process detections asynchronously to avoid blocking
+- **Reduced payload size** - Image quality reduced from 85% → 60% (70% smaller)
+- **Parallel processing** - Independent camera processing in parallel
+- **In-memory storage** - Fast read/write operations without database overhead
+
+### Current Performance Metrics
+- **Single detection processing**: ~50-75ms (with YOLO at 8000)
+- **4 parallel detections**: 100-150ms total (5-8x faster than sequential)
+- **WebSocket latency**: <10ms for local connections
+- **API response time**: <5ms for cached data
+
+### Recommended Optimizations for Production
+1. **Add Redis** - Replace in-memory store for persistence and multi-instance support
+2. **Database integration** - Store historical data in PostgreSQL/MongoDB
+3. **Caching layer** - Use Redis for frequently accessed endpoints
+4. **Load balancing** - Use NGINX or cloud load balancer for scaling
+5. **Rate limiting** - Protect API from abuse (express-rate-limit)
+6. **Compression** - Enable gzip compression for API responses
+7. **CDN integration** - Serve static assets via CDN
 ## ⚡ Performance Optimization
 
 Based on the SmartFlow AI system optimizations:
@@ -938,6 +1168,98 @@ app.use((req, res, next) => {
 
 ---
 
+## 🤝 Contributing
+
+We welcome contributions to the SmartFlow AI Backend!
+
+### Contribution Guidelines
+
+1. **Fork the repository** and create a feature branch
+   ```bash
+   git checkout -b feat/your-feature-name
+   ```
+
+2. **Make your changes** following code style guidelines
+
+3. **Run type checking**
+   ```bash
+   npm run typecheck
+   ```
+
+4. **Test your changes** with API calls and Socket.io events
+
+5. **Update documentation** if you change APIs or behavior
+   - Update `README.md` with new endpoints
+   - Update `src/lib/api-zod.ts` with new schemas
+   - Update `src/types/ai-models.ts` with new types
+
+6. **Commit with descriptive messages**
+   ```bash
+   git commit -m "feat: add vehicle speed analytics endpoint"
+   ```
+
+7. **Submit a pull request** with detailed description
+
+### Branch Naming Convention
+
+- `feat/feature-name` - New features
+- `fix/bug-description` - Bug fixes
+- `docs/update-readme` - Documentation updates
+- `refactor/component-name` - Code refactoring
+- `perf/optimization-name` - Performance improvements
+
+### Code Review Process
+
+1. All PRs require **type checking** to pass
+2. Maintainers will review within **48 hours**
+3. Address feedback and **push updates**
+4. Once approved, PRs will be **merged to main**
+
+---
+
+## 📄 License
+
+MIT License
+
+Copyright (c) 2026 SmartFlow AI Team
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+## 📞 Support
+
+For questions, issues, or contributions:
+
+- **GitHub Issues**: [Report bugs or request features](../../issues)
+- **Email**: support@smartflow.ai
+- **Documentation**: [API Documentation](./docs/API.md)
+
+---
+
+<div align="center">
+
+**Built with ❤️ for the India Innovate Hackathon**
+
+[Architecture](#architecture) • [API Reference](#api-reference) • [Getting Started](#getting-started) • [Contributing](#contributing)
+
+</div>
 ## 🤝 Contributing
 
 We welcome contributions to the SmartFlow AI Backend!
