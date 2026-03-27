@@ -49,7 +49,7 @@ The system processes vehicle detection data from 4 camera intersections, maintai
 - **Automated Emergency Detection** - Detect ambulances from AI models
 - **Green Corridor Activation** - Automatically create priority routes for emergency vehicles
 - **Route Management** - Track emergency vehicle paths through intersections
-- **Priority-based Scheduling** - Configure priority levels (1-5) for different emergency types
+- **Priority-based Scheduling** - Configure priority for different emergency types
 
 ### 📊 Analytics & Monitoring
 - **Live Dashboard Statistics** - Total vehicles, active intersections, congested roads
