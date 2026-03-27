@@ -1,4 +1,4 @@
-ximport express, { type IRouter } from "express";
+import express, { type IRouter } from "express";
 import { settingsStore } from "../store/settings-store";
 
 const router: IRouter = express.Router();
