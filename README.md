@@ -59,7 +59,6 @@ The system processes vehicle detection data from 4+ camera intersections, mainta
 ### 🚨 Emergency Vehicle System
 - **Automated Emergency Detection** - Detect ambulances, fire trucks, and police vehicles from AI models
 - **Green Corridor Activation** - Automatically create priority routes for emergency vehicles
-- **Route Management** - Track emergency vehicle paths through intersections
 - **Real-time Alerts** - Instant notifications via Socket.io when emergency vehicles detected
 
 ### 📊 Analytics & Monitoring
