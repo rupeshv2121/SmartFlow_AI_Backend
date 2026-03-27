@@ -182,6 +182,7 @@ CORS_ORIGIN=http://localhost:5173,http://localhost:3000
 
 ```bash
 npm run dev
+npm run dev
 ```
 
 The server will start at `http://localhost:3000`
@@ -217,19 +218,19 @@ Receive vehicle detection data from YOLO model.
   "roadId": "road-1",
   "roadName": "Main Street North",
   "detections": [
-	{
-	  "id": "det-001",
-	  "type": "car",
-	  "confidence": 0.92,
-	  "speed": 28.5,
-	  "bbox": [120, 340, 280, 480]
-	},
-	{
-	  "id": "det-002",
-	  "type": "bus",
-	  "confidence": 0.88,
-	  "speed": 15.2
-	}
+    {
+      "id": "det-001",
+      "type": "car",
+      "confidence": 0.92,
+      "speed": 28.5,
+      "bbox": [120, 340, 280, 480]
+    },
+    {
+      "id": "det-002",
+      "type": "bus",
+      "confidence": 0.88,
+      "speed": 15.2
+    }
   ]
 }
 ```
@@ -256,13 +257,13 @@ Send aggregated intersection data.
   "totalVehicles": 48,
   "congestionLevel": 67.5,
   "roads": [
-	{
-	  "roadId": "road-1",
-	  "roadName": "Main Street North",
-	  "vehicleCount": 15,
-	  "averageSpeed": 25.3,
-	  "density": "medium"
-	}
+    {
+      "roadId": "road-1",
+      "roadName": "Main Street North",
+      "vehicleCount": 15,
+      "averageSpeed": 25.3,
+      "density": "medium"
+    }
   ],
   "timestamp": "2026-03-27T10:30:00Z"
 }
@@ -343,13 +344,13 @@ Get current traffic density for all roads.
 ```json
 {
   "roads": [
-	{
-	  "id": "road-1",
-	  "name": "Main Street North",
-	  "density": "medium",
-	  "vehicleCount": 32,
-	  "speed": 28.5
-	}
+    {
+      "id": "road-1",
+      "name": "Main Street North",
+      "density": "medium",
+      "vehicleCount": 32,
+      "speed": 28.5
+    }
   ],
   "timestamp": "2026-03-27T10:30:00Z"
 }
@@ -362,11 +363,11 @@ Get historical traffic data (last 30 minutes).
 ```json
 {
   "data": [
-	{
-	  "time": "10:00",
-	  "vehicles": 127,
-	  "congestion": 65
-	}
+    {
+      "time": "10:00",
+      "vehicles": 127,
+      "congestion": 65
+    }
   ]
 }
 ```
@@ -408,12 +409,12 @@ Get road density mapping.
 ```json
 {
   "cells": [
-	{
-	  "x": 0,
-	  "y": 0,
-	  "value": 0.75,
-	  "zone": "Downtown"
-	}
+    {
+      "x": 0,
+      "y": 0,
+      "value": 0.75,
+      "zone": "Downtown"
+    }
   ],
   "maxValue": 1.0
 }
@@ -428,16 +429,16 @@ Get current and recommended signal timings.
 ```json
 {
   "signals": [
-	{
-	  "id": "signal-1",
-	  "intersection": "Main Junction",
-	  "vehicles": 32,
-	  "density": "medium",
-	  "greenTime": 45,
-	  "currentPhase": "green",
-	  "phaseElapsed": 23,
-	  "cycleTime": 75
-	}
+    {
+      "id": "signal-1",
+      "intersection": "Main Junction",
+      "vehicles": 32,
+      "density": "medium",
+      "greenTime": 45,
+      "currentPhase": "green",
+      "phaseElapsed": 23,
+      "cycleTime": 75
+    }
   ],
   "timestamp": "2026-03-27T10:30:00Z"
 }
@@ -450,19 +451,19 @@ Get per-intersection congestion analytics.
 ```json
 {
   "data": [
-	{
-	  "intersection": "Main Junction",
-	  "congestion": 67.5,
-	  "vehicles": 48,
-	  "avgSpeed": 22.3
-	}
+    {
+      "intersection": "Main Junction",
+      "congestion": 67.5,
+      "vehicles": 48,
+      "avgSpeed": 22.3
+    }
   ],
   "hourlyTrend": [
-	{
-	  "hour": "07:00",
-	  "congestion": 85,
-	  "throughput": 650
-	}
+    {
+      "hour": "07:00",
+      "congestion": 85,
+      "throughput": 650
+    }
   ]
 }
 ```
@@ -476,15 +477,15 @@ Get recent emergency events.
 ```json
 {
   "events": [
-	{
-	  "id": "evt-001",
-	  "type": "Ambulance",
-	  "route": "Signal A → Signal B → Hospital",
-	  "timestamp": "2026-03-27T10:28:00Z",
-	  "duration": 142,
-	  "status": "active",
-	  "vehicleId": "AMB-2047"
-	}
+    {
+      "id": "evt-001",
+      "type": "Ambulance",
+      "route": "Signal A → Signal B → Hospital",
+      "timestamp": "2026-03-27T10:28:00Z",
+      "duration": 142,
+      "status": "active",
+      "vehicleId": "AMB-2047"
+    }
   ],
   "recentCount": 1
 }
@@ -500,11 +501,11 @@ Get active emergency corridor information.
   "corridorId": "corridor-2047",
   "route": ["Signal A", "Signal B", "Signal C", "Hospital"],
   "signals": [
-	{
-	  "signalId": "sig-a",
-	  "intersection": "Signal A - North/Central",
-	  "status": "green"
-	}
+    {
+      "signalId": "sig-a",
+      "intersection": "Signal A - North/Central",
+      "status": "green"
+    }
   ],
   "vehicleType": "Ambulance",
   "estimatedClearTime": 45
@@ -521,24 +522,24 @@ Get all system settings.
 {
   "success": true,
   "data": {
-	"aiModel": {
-	  "enabled": true,
-	  "confidenceThreshold": 0.7,
-	  "detectionInterval": 1000
-	},
-	"alerts": {
-	  "congestionThreshold": 75,
-	  "emergencyAlerts": true
-	},
-	"trafficControl": {
-	  "autoOptimize": true,
-	  "minGreenTime": 20,
-	  "maxGreenTime": 90
-	},
-	"display": {
-	  "refreshRate": 2000,
-	  "showDetections": true
-	}
+    "aiModel": {
+      "enabled": true,
+      "confidenceThreshold": 0.7,
+      "detectionInterval": 1000
+    },
+    "alerts": {
+      "congestionThreshold": 75,
+      "emergencyAlerts": true
+    },
+    "trafficControl": {
+      "autoOptimize": true,
+      "minGreenTime": 20,
+      "maxGreenTime": 90
+    },
+    "display": {
+      "refreshRate": 2000,
+      "showDetections": true
+    }
   },
   "timestamp": "2026-03-27T10:30:00Z"
 }
@@ -551,10 +552,10 @@ Update system settings.
 ```json
 {
   "aiModel": {
-	"confidenceThreshold": 0.75
+    "confidenceThreshold": 0.75
   },
   "alerts": {
-	"congestionThreshold": 80
+    "congestionThreshold": 80
   }
 }
 ```
@@ -645,6 +646,52 @@ socket.on('emergency-vehicle-detected', (alert) => {
   console.log('🚨 Emergency vehicle detected:', alert);
 });
 ```
+## 🔄 Real-time Events
+
+The backend uses Socket.io for real-time bidirectional communication.
+
+### Server-to-Client Events
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `initial-data` | `{ intersections, roads, signals, emergencyVehicles, dashboardStats }` | Sent on client connection with complete state snapshot |
+| `road-updated` | `RoadData` | Emitted when road traffic data changes |
+| `intersection-updated` | `IntersectionData` | Emitted when intersection data updates |
+| `dashboard-stats` | `DashboardStats` | Real-time dashboard statistics |
+| `emergency-vehicle-detected` | `{ vehicleId, type, currentIntersection, priority, timestamp }` | Emergency vehicle detection alert |
+| `emergency-vehicle-cleared` | `{ vehicleId }` | Emergency vehicle completed route |
+| `settings-updated` | `SystemSettings` | System settings changed |
+
+### Client-to-Server Events
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `request-intersection` | `intersectionId: string` | Request specific intersection data |
+| `request-road` | `roadId: string` | Request specific road data |
+
+### Connection Example
+
+```typescript
+import io from 'socket.io-client';
+
+const socket = io('http://localhost:3000');
+
+socket.on('connect', () => {
+  console.log('Connected to SmartFlow Backend');
+});
+
+socket.on('initial-data', (data) => {
+  console.log('Initial state:', data);
+});
+
+socket.on('road-updated', (roadData) => {
+  console.log('Road updated:', roadData);
+});
+
+socket.on('emergency-vehicle-detected', (alert) => {
+  console.log('🚨 Emergency vehicle detected:', alert);
+});
+```
 
 ---
 
@@ -672,10 +719,10 @@ await fetch('http://localhost:3000/api/ai/vehicle-detection', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
-	intersectionId: 'int-001',
-	roadId: 'road-1',
-	roadName: 'Main Street',
-	detections: result.detections
+    intersectionId: 'int-001',
+    roadId: 'road-1',
+    roadName: 'Main Street',
+    detections: result.detections
   })
 });
 ```
@@ -688,21 +735,60 @@ For faster synchronization across multiple intersections:
 curl -X POST http://localhost:3000/api/ingest/batch \
   -H "Content-Type: application/json" \
   -d '{
-	"intersections": [...],
-	"roads": [...],
-	"signals": [...]
+    "intersections": [...],
+    "roads": [...],
+    "signals": [...]
   }'
 ```
 
 ---
 
 ## 💻 Development
+## 💻 Development
 
+### Available Scripts
 ### Available Scripts
 
 ```bash
 # Development server with hot reload
+# Development server with hot reload
 npm run dev
+
+# Type checking
+npm run typecheck
+
+# Build for production
+npm run build
+
+# Start production server
+npm start
+```
+
+### Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `PORT` | `3000` | Server port |
+| `NODE_ENV` | `development` | Environment (development/production) |
+| `CORS_ORIGIN` | `*` | Allowed CORS origins (comma-separated) |
+
+### Development Workflow
+
+1. **Edit TypeScript files** in `src/` directory
+2. **Hot reload** automatically restarts server (via `tsx`)
+3. **Type check** with `npm run typecheck`
+4. **Test endpoints** with curl/Postman
+5. **Monitor console** for Socket.io connections and API requests
+
+### Code Style Guidelines
+
+- Use **TypeScript** for all new code
+- Define **types** in `src/types/ai-models.ts`
+- Add **Zod schemas** in `src/lib/api-zod.ts` for validation
+- Follow **Express middleware** patterns
+- Use **async/await** for asynchronous operations
+- Log important events with **ISO timestamps**
+
 
 # Type checking
 npm run typecheck
@@ -817,6 +903,30 @@ Real-time event system:
 
 ---
 
+## ⚡ Performance Optimization
+
+Based on the SmartFlow AI system optimizations:
+
+### Backend Optimizations
+- **Frame skipping prevention** - Process detections asynchronously to avoid blocking
+- **Reduced payload size** - Image quality reduced from 85% → 60% (70% smaller)
+- **Parallel processing** - Independent camera processing in parallel
+- **In-memory storage** - Fast read/write operations without database overhead
+
+### Current Performance Metrics
+- **Single detection processing**: ~50-75ms (with YOLO at 8000)
+- **4 parallel detections**: 100-150ms total (5-8x faster than sequential)
+- **WebSocket latency**: <10ms for local connections
+- **API response time**: <5ms for cached data
+
+### Recommended Optimizations for Production
+1. **Add Redis** - Replace in-memory store for persistence and multi-instance support
+2. **Database integration** - Store historical data in PostgreSQL/MongoDB
+3. **Caching layer** - Use Redis for frequently accessed endpoints
+4. **Load balancing** - Use NGINX or cloud load balancer for scaling
+5. **Rate limiting** - Protect API from abuse (express-rate-limit)
+6. **Compression** - Enable gzip compression for API responses
+7. **CDN integration** - Serve static assets via CDN
 ## ⚡ Performance Optimization
 
 Based on the SmartFlow AI system optimizations:
