@@ -1,15 +1,4 @@
-# SmartFlow AI Backend
-
-<div align="center">
-
-**Real-time Traffic Management & Emergency Corridor Orchestration System**
-
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.6-blue.svg)](https://www.typescriptlang.org/)
-[![Express](https://img.shields.io/badge/Express-5.0-green.svg)](https://expressjs.com/)
-[![Socket.io](https://img.shields.io/badge/Socket.io-4.8-purple.svg)](https://socket.io/)
-[![Node.js](https://img.shields.io/badge/Node.js-18%2B-brightgreen.svg)](https://nodejs.org/)
-
-</div>
+# SmartFlow AI - Intelligent Traffic and Emergency Grid
 
 ---
 
@@ -34,7 +23,7 @@
 
 ## 🎯 Overview
 
-**SmartFlow AI Backend** is a high-performance Express + TypeScript server designed for the SmartFlow AI Traffic Management System, part of the India Innovate Hackathon project. The backend serves as the central orchestration hub for:
+**SmartFlow AI Backend** is a high-performance Express + TypeScript server designed for the SmartFlow AI Intelligent Traffic and Emergency Grid, part of the India Innovate Hackathon project. The backend serves as the central orchestration hub for:
 
 - **AI-powered traffic analysis** from YOLO object detection models
 - **Real-time traffic data ingestion** from multiple camera feeds
@@ -43,7 +32,7 @@
 - **Live dashboard metrics** with WebSocket updates
 - **Traffic density analytics** and predictive insights
 
-The system processes vehicle detection data from 4+ camera intersections, maintains an in-memory traffic state store, calculates optimal signal timings, and activates emergency corridors when ambulances, fire trucks, or police vehicles are detected.
+The system processes vehicle detection data from 4 camera intersections, maintains an in-memory traffic state store, calculates optimal signal timings, and activates emergency corridors when ambulances are detected.
 
 ---
 
@@ -57,31 +46,27 @@ The system processes vehicle detection data from 4+ camera intersections, mainta
 - **Traffic Density Classification** - Automatic low/medium/high density categorization
 
 ### 🚨 Emergency Vehicle System
-- **Automated Emergency Detection** - Detect ambulances, fire trucks, and police vehicles from AI models
+- **Automated Emergency Detection** - Detect ambulances from AI models
 - **Green Corridor Activation** - Automatically create priority routes for emergency vehicles
 - **Route Management** - Track emergency vehicle paths through intersections
 - **Priority-based Scheduling** - Configure priority levels (1-5) for different emergency types
-- **Real-time Alerts** - Instant notifications via Socket.io when emergency vehicles detected
 
 ### 📊 Analytics & Monitoring
-- **Live Dashboard Statistics** - Total vehicles, active intersections, congested roads, emergency alerts
-- **Historical Traffic Data** - 30-minute rolling window of traffic patterns
-- **Vehicle Type Classification** - Track cars, bikes, buses, trucks, and emergency vehicles
-- **City Heatmap** - Visualize traffic intensity across different zones
+- **Live Dashboard Statistics** - Total vehicles, active intersections, congested roads
+- **Historical Traffic Data** - Last 5 hrs rolling window of traffic patterns
+- **Vehicle Type Classification** - Track cars, bikes, buses, and emergency vehicles
 - **Hourly Congestion Trends** - Analyze peak hours and traffic patterns
 
 ### 🔧 System Controls
 - **Settings Management** - Configure AI model parameters, alert thresholds, traffic controls
 - **AI Confidence Tuning** - Adjust detection confidence threshold (0.5-0.99)
 - **Alert Configuration** - Customize congestion and emergency alert settings
-- **Display Preferences** - Control UI updates and refresh rates
 - **Reset to Defaults** - Restore factory settings
 
 ### 🔌 Real-time Communication
 - **Socket.io Integration** - WebSocket-based real-time updates
 - **Event Broadcasting** - Push updates for roads, intersections, signals, emergencies
 - **Client Synchronization** - Send initial data snapshot on connection
-- **Bi-directional Communication** - Support client-initiated data requests
 
 ---
 
@@ -92,42 +77,41 @@ The system processes vehicle detection data from 4+ camera intersections, mainta
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                     Frontend (React)                            │
-│              green-corridor-sim                                 │
-└────────────────────┬────────────────────────────────────────────┘
-					 │ HTTP/Socket.io
-					 ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                SmartFlow AI Backend (Express + TypeScript)      │
+│                   & green-corridor-sim                          │
+└───────────────────────────┬─────────────────────────────────────┘
+					 		│ HTTP/Socket.io
+					 		▼
+┌────────────────────────────────────────────────────────────────┐
+│                SmartFlow AI Backend (Express + TypeScript)     │
 │  ┌──────────────────────────────────────────────────────────┐  │
 │  │  REST API Routes                                         │  │
-│  │  ├── /api/ai            - AI model integration          │  │
-│  │  ├── /api/ingest        - Data ingestion                │  │
-│  │  ├── /api/traffic       - Traffic analytics             │  │
-│  │  ├── /api/signals       - Signal timing                 │  │
-│  │  ├── /api/emergency     - Emergency management          │  │
-│  │  ├── /api/settings      - System configuration          │  │
-│  │  └── /api/health        - Health checks                 │  │
+│  │  ├── /api/ai            - AI model integration           │  │
+│  │  ├── /api/ingest        - Data ingestion                 │  │
+│  │  ├── /api/traffic       - Traffic analytics              │  │
+│  │  ├── /api/signals       - Signal timing                  │  │
+│  │  ├── /api/emergency     - Emergency management           │  │
+│  │  ├── /api/settings      - System configuration           │  │
+│  │  └── /api/health        - Health checks                  │  │
 │  └──────────────────────────────────────────────────────────┘  │
 │  ┌──────────────────────────────────────────────────────────┐  │
 │  │  Core Services                                           │  │
-│  │  ├── Traffic Light Algorithm - Dynamic timing calc     │  │
-│  │  ├── Green Corridor Service - Emergency routing        │  │
-│  │  ├── Traffic Store - In-memory state management        │  │
-│  │  └── Settings Store - System configuration             │  │
+│  │  ├── Traffic Light Algorithm - Dynamic timing calc.      │  │
+│  │  ├── Green Corridor Service - Emergency routing          │  │
+│  │  ├── Traffic Store - In-memory state management          │  │
+│  │  └── Settings Store - System configuration               │  │
 │  └──────────────────────────────────────────────────────────┘  │
 │  ┌──────────────────────────────────────────────────────────┐  │
-│  │  Socket.io Server - Real-time event broadcasting        │  │
+│  │  Socket.io Server - Real-time event broadcasting         │  │
 │  └──────────────────────────────────────────────────────────┘  │
-└────────────────────┬────────────────────────────────────────────┘
-					 │ HTTP API
-					 ▼
+└───────────────────────────────┬────────────────────────────────┘
+					 			│ HTTP API
+					 			▼
 ┌─────────────────────────────────────────────────────────────────┐
-│              SmartFlow AI Model Service (FastAPI)               │
-│                   YOLO Object Detection                         │
-│                      Port 8000                                  │
+│                 SmartFlow AI Model Service (FastAPI)            │
+│                       YOLO Object Detection                     │
 └─────────────────────────────────────────────────────────────────┘
 ```
-
+ 
 ### Data Flow
 
 1. **Detection Pipeline**
@@ -158,8 +142,6 @@ The system processes vehicle detection data from 4+ camera intersections, mainta
 | **Validation** | Zod | 3.25.76 | Schema validation |
 | **Build Tool** | esbuild | 0.27.3 | Fast bundling |
 | **Dev Server** | tsx | 4.20.6 | TypeScript execution |
-| **Database** | better-sqlite3 | 12.8.0 | Local data persistence (optional) |
-| **ORM** | Drizzle ORM | 0.45.1 | Type-safe database queries |
 
 ---
 
@@ -186,7 +168,7 @@ cd SmartFlow_AI_Backend
 npm install
 ```
 
-3. **Configure environment variables** (optional)
+3. **Configure environment variables**
 
 Create a `.env` file in the root directory:
 
@@ -421,9 +403,6 @@ Get dashboard statistics.
 
 #### GET `/api/road-density`
 Get road density mapping.
-
-#### GET `/api/heatmap`
-Get city traffic heatmap data.
 
 **Response:**
 ```json
@@ -812,7 +791,7 @@ In-memory storage for:
 - Roads (individual traffic lanes)
 - Signals (traffic light states)
 - Emergency vehicles (active alerts)
-- Historical data (30-minute rolling window)
+- Historical data (5 hrs rolling window)
 
 #### **Traffic Light Algorithm** (`src/services/traffic-light-algorithm.ts`)
 Calculates optimal green light duration based on:
@@ -905,38 +884,6 @@ NODE_ENV=production
 CORS_ORIGIN=https://yourdomain.com
 ```
 
-### Security Checklist
-
-- [ ] Configure **CORS** properly (restrict origins)
-- [ ] Add **authentication** (JWT, API keys)
-- [ ] Enable **HTTPS/TLS** certificates
-- [ ] Implement **rate limiting**
-- [ ] Add **input validation** for all endpoints
-- [ ] Use **environment variables** for secrets
-- [ ] Enable **logging** and monitoring (Winston, Datadog)
-- [ ] Configure **Socket.io Redis adapter** for multi-instance
-
-### Monitoring & Logging
-
-```typescript
-// Example: Winston logger integration
-import winston from 'winston';
-
-const logger = winston.createLogger({
-  level: 'info',
-  format: winston.format.json(),
-  transports: [
-	new winston.transports.File({ filename: 'error.log', level: 'error' }),
-	new winston.transports.File({ filename: 'combined.log' })
-  ]
-});
-
-app.use((req, res, next) => {
-  logger.info(`${req.method} ${req.url}`);
-  next();
-});
-```
-
 ---
 
 ## 🤝 Contributing
@@ -985,42 +932,6 @@ We welcome contributions to the SmartFlow AI Backend!
 2. Maintainers will review within **48 hours**
 3. Address feedback and **push updates**
 4. Once approved, PRs will be **merged to main**
-
----
-
-## 📄 License
-
-MIT License
-
-Copyright (c) 2026 SmartFlow AI Team
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
----
-
-## 📞 Support
-
-For questions, issues, or contributions:
-
-- **GitHub Issues**: [Report bugs or request features](../../issues)
-- **Email**: support@smartflow.ai
-- **Documentation**: [API Documentation](./docs/API.md)
 
 ---
 
